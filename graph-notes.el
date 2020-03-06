@@ -11,5 +11,5 @@
 
 (let ((b-name (car (s-split "[.]" (buffer-name)))))
   (let ((buffer (generate-new-buffer (s-lex-format "in-links<${b-name}>"))))
-	(shell-command (s-lex-format "grep -nwrH -C1 \"${b-name}\" .") buffer)
+	(shell-command (s-lex-format "grep -nwrH -C1 --exclude-dir=.git \"${b-name}\" .") buffer)
 	(pop-to-buffer buffer)))
