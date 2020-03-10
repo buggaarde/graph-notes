@@ -6,7 +6,7 @@
 (require 's)
 (require 'gn-mode)
 
-(defun grep-current-file-name-and-go-to-buffer ()
+(defun graph-notes-grep-current-file-name-and-go-to-buffer ()
   "Display the result of a grep for the current file name (without extension) in a new buffer, and go to that buffer."
 	(interactive)
 	(let ((b-name (car (s-split "[.]" (buffer-name)))))
@@ -16,12 +16,16 @@
 		(gn-mode)
 		(pop-to-buffer buffer))))
 
+(defvar graph-notes-mode-map
+  (let ((map (make-sparse-keymap)))
+	(define-key map (kbd "C-c n l") 'graph-notes-grep-current-file-name-and-go-to-buffer)
+	map))
+
 (define-minor-mode graph-notes-mode
   "Organize your notes in a graph"
   :lighter " graph-notes"
   :group 'graph-notes
-
-  :keymap '(((kbd "C-c n l") . 'grep-current-file-name-and-go-to-buffer)))
+  :keymap graph-notes-mode-map)
 
 (provide 'graph-notes)
 ;;; graph-notes ends here
