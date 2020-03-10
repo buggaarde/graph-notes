@@ -6,19 +6,31 @@
 (require 's)
 (require 'gn-mode)
 
-(defun graph-notes-grep-current-file-name-and-go-to-buffer ()
+(defun graph-notes--grep-file-name-in-current-directory-and-go-to-buffer ()
   "Display the result of a grep for the current file name (without extension) in a new buffer, and go to that buffer."
 	(interactive)
 	(let ((b-name (car (s-split "[.]" (buffer-name)))))
-	  (let ((buffer (generate-new-buffer (s-lex-format "in-links<${b-name}>"))))
-		(shell-command (s-lex-format "grep -nwrH -C1 --exclude-dir=.git \"${b-name}\" .") buffer)
-		(set-buffer buffer)
+	  (let ((in-links-buffer
+			 (get-buffer-create (s-lex-format "in-links<${b-name}>")))
+			(grep-buffer
+			 (get-buffer-create (s-lex-format "*grep:in-links<${b-name}>*")))
+			(grep-string (with-temp-buffer
+						   (shell-command
+							(s-lex-format "grep -nwrH -C1 --exclude-dir=.git \"${b-name}\" .") t)
+						   (buffer-string))))
+
+		(set-buffer grep-buffer)
+		(erase-buffer)
+		(insert grep-string)
+		
+		(set-buffer in-links-buffer)
+		(gn--create-links-buffer-from-grep grep-buffer)
 		(gn-mode)
-		(pop-to-buffer buffer))))
+		(pop-to-buffer in-links-buffer))))
 
 (defvar graph-notes-mode-map
   (let ((map (make-sparse-keymap)))
-	(define-key map (kbd "C-c n l") 'graph-notes-grep-current-file-name-and-go-to-buffer)
+	(define-key map (kbd "C-c n l") 'graph-notes--grep-file-name-in-current-directory-and-go-to-buffer)
 	map))
 
 (define-minor-mode graph-notes-mode
