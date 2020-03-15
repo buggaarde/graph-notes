@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;;; package --- Summary
 
 ;;; Commentary:
@@ -5,48 +6,42 @@
 ;;; Code:
 (require 's)
 
-(defun gn--default-button-pressed (button)
-  "The default action when a button is pressed in the links buffer.
-
-BUTTON is the button that carries out the default action."
-  (message (format "Button is pressed!")))
-
-(define-button-type 'gn--in-link-button
-  'face 'default
-  'action 'gn--default-button-pressed
-  'help-echo "click this button"
-  'follow-link t)
-
 (defvar gn--file-name-regex "\\(.*\\):[0-9]+:")
-(defvar gn--linum-regex "^[-:][0-9]+[-:]")
+(defvar gn--linum-regex "^:\\([0-9]+\\):")
+
+(define-button-type 'gn--default-button
+  'face 'default)
 
 (defun gn--create-links-buffer-from-grep (grep-buffer)
   "Documentation.
 
 GREP-BUFFER is the buffer that contains the output of the grep"
-  (progn
-	(let ((this-buffer (buffer-name)))
-	  (set-buffer grep-buffer)
-	  (let ((grep-list (s-split "\n--\n--\n" (buffer-string)))
-			(grep-button
-			 (lambda (tag-and-context)
-			   (let ((file-name (nth 1 (s-match gn--file-name-regex tag-and-context))))
-				 (let ((raw-button-content (s-replace file-name "" tag-and-context)))
-				   ;; (let ((formatted-button-content
-				   ;; 		  (s-join "\n"
-				   ;; 				  (mapcar (lambda (line)
-				   ;; 							(let ((n (car (s-match gn--linum-regex line))))
-				   ;; 							  (s-replace n (s-append " " n) line)))
-				   ;; 						  (s-lines raw-button-content))))))
-				   (insert (propertize file-name 'font-lock-face 'bold))
-				   (insert "\n")
-				   (insert-text-button
-					(make-text-button raw-button-content (length raw-button-content))
-					:type 'gn--in-link-button)
-				   (insert "\n\n\n"))))))
-		(set-buffer this-buffer)
-		(erase-buffer)
-		(mapc grep-button grep-list)))))
+  (let ((this-buffer (buffer-name)))
+	(set-buffer grep-buffer)
+	(let* ((grep-list (s-split "\n--\n--\n" (buffer-string)))
+		   (grep-button (lambda (tag-and-context)
+						  (let* ((file-name (nth 1 (s-match gn--file-name-regex tag-and-context)))
+								 (raw-button-content (s-replace file-name "" tag-and-context))
+								 (linenumber (string-to-number (nth 1 (s-match gn--linum-regex raw-button-content)))))
+														
+							(insert (propertize file-name 'font-lock-face 'bold))
+							(insert "\n")
+							(insert-text-button
+							 raw-button-content
+							 'type 'gn--default-button
+							 'action (lambda (button)
+									   (progn
+										 (find-file file-name)
+										 (goto-char (point-min))
+										 (forward-line (1- linenumber))))
+				
+							 'follow-link t
+							 'help-echo "Click to go to file")
+							
+							(insert "\n\n\n")))))
+	  (set-buffer this-buffer)
+	  (erase-buffer)
+	  (mapc grep-button grep-list))))
 
 (defvar gn--font-locks nil "Test.")
 
@@ -64,19 +59,9 @@ GREP-BUFFER is the buffer that contains the output of the grep"
 
 (defvar current-context 1)
 
-(defun gn--next-line-with-context ()
-  (interactive)
-  (next-line (+ 2 (+ 1 (* 2 current-context)))))
-
-(defun gn--previous-line-with-context ()
-  (interactive)
-  (next-line (+ 2 (+ 1 (* 2 current-context)))))
-
 (defvar gn-mode-map
   (let ((map (make-sparse-keymap)))
 	(define-key map (kbd "q") 'gn--quit-and-kill-buffer)
-	(define-key map (kbd "<DOWN>") 'gn--next-line-with-context)
-	(define-key map (kbd "<UP>") 'gn--previous-line-with-context)
 	map)
   "The keymap for the graph-notes links buffer.")
 
