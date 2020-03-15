@@ -18,8 +18,10 @@
   (require 'ert))
 
 (Setup
- ;; Before anything has run
- )
+ ;; Before anything has been run
+ (unless (f-exists? "./test_base_directory/")
+   (f-mkdir "./test_base_directory/"))
+ (setq graph-notes-base-directory "./test_base_directory"))
 
 (Before
  ;; Before each scenario is run
@@ -27,8 +29,11 @@
 
 (After
  ;; After each scenario is run
- )
+ (setq graph-notes-file-extension graph-notes--default-file-extension)
+ (setq graph-notes--all-tags '()))
 
 (Teardown
  ;; After when everything has been run
- )
+ (unless (not (f-exists? "./test_base_directory/"))
+   (f-delete "./test_base_directory/" t))
+ (setq graph-notes-base-directory nil))

@@ -6,11 +6,11 @@
 
 (Given "^A file-extension \"\\([^\"]+\\)\"$"
 	   (lambda (extension)
-		 (setq graph-notes--file-extension extension)))
+		 (setq graph-notes-file-extension extension)))
 
 (Given "^A tag \"\\([^\"]+\\)\"$"
 	   (lambda (tag)
-		 (graph-notes--create-new-tag tag)))
+		 (graph-notes--create-new-tag (s-lex-format "${tag}"))))
 
 (When "^I execute \"\\([^\"]+\\)\"$"
 	  (lambda (command)
@@ -22,7 +22,8 @@
 
 (Then "^The file \"\\([^\"]+\\)\" should exist$"
 	  (lambda (file)
-		(cl-assert (f-exists? file))))
+		(cl-assert
+		 (f-exists? (s-lex-format "${graph-notes-base-directory}/${file}")))))
 
 (Then "^The file \"\\([^\"]+\\)\" should not exist$"
 	  (lambda (file)

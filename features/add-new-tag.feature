@@ -8,19 +8,18 @@ Feature: Add new tag
     When I execute "graph-notes--create-new-tag" with arg "test"
     Then The file "test.md" should exist
 
-  Scenario: List all tags
-    Given A file-extension ".md"
-    When I execute "graph-notes--list-all-tags"
-    Then The tag "test" should be in the tags-list
-
-  Scenario: Remove a tag
-    Given A tag "test"
-    And A file-extension ".md"
-    When I execute "graph-notes--remove-tag"
-    Then The tag "test" should not be in the tags-list
-    And The file "test.md" should not exist
-
   Scenario: Create a tag with default file-extension
     When I execute "graph-notes--create-new-tag" with arg "test"
     Then The file "test.org" should exist
 
+  Scenario: List all tags
+    Given A tag "test"
+    When I execute "graph-notes--list-all-tags"
+    Then The tag "test" should be in the tags-list
+
+  Scenario: Remove a tag
+    Given A file-extension ".md"
+    And A tag "test"
+    When I execute "graph-notes--remove-tag" with arg "test"
+    Then The tag "test" should not be in the tags-list
+    And The file "test.md" should not exist
