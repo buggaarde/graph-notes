@@ -30,7 +30,11 @@
 (After
  ;; After each scenario is run
  (setq graph-notes-file-extension graph-notes--default-file-extension)
- (setq graph-notes--all-tags '()))
+ (setq graph-notes--all-tags '())
+ (unless (not (f-exists? "./test_base_directory/"))
+   (mapc
+	(lambda (file) (f-delete (f-full file)))
+	(f-files "./test_base_directory/"))))
 
 (Teardown
  ;; After when everything has been run

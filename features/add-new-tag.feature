@@ -8,7 +8,7 @@ Feature: Add new tag
     When I execute "graph-notes--create-new-tag" with arg "test"
     Then The file "test.md" should exist
 
-  Scenario: Create a tag with default file-extension
+  Scenario: Create new tag with default file-extension
     When I execute "graph-notes--create-new-tag" with arg "test"
     Then The file "test.org" should exist
 

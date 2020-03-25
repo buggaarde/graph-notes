@@ -36,3 +36,11 @@
 (Then "^The tag \"\\([^\"]+\\)\" should not be in the tags-list$"
 	  (lambda (tag)
 		(cl-assert (not (member tag (graph-notes--list-all-tags))))))
+
+(And "^I see the following text$"
+  (lambda (text)
+	(insert text)))
+
+(Then "^I should see the following text$"
+  (lambda (text)
+    (cl-assert (s-equals? (buffer-string) text))))

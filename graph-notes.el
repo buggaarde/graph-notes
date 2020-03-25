@@ -13,6 +13,18 @@
 (defvar graph-notes-file-extension graph-notes--default-file-extension)
 (defvar graph-notes--all-tags '())
 
+(define-button-type 'graph-notes--default-button
+  'face 'default)
+
+(defun graph-notes-insert-tag (tag)
+  (interactive)
+  (progn
+	(graph-notes--create-new-tag
+	 (s-lex-format "${tag}"))
+	(insert-text-button
+	 (s-lex-format "${tag}")
+	 'face 'graph-notes--default-button)))
+
 (defun graph-notes--create-new-tag (tag)
   "Create a new tag by adding to the graph-notes--all-tags list.
 Also create a file with the appropriate name.
