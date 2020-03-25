@@ -6,7 +6,7 @@
 (require 'dash)
 (require 'f)
 (require 's)
-(require 'gn-mode)
+(require 'graph-notes-backlinks)
 
 (defvar graph-notes-base-directory nil)
 (defvar graph-notes--default-file-extension ".org")
@@ -39,24 +39,26 @@ TAG is the name of the tag."
   "Display the result of a grep for the current file name (without extension) in a new buffer, and go to that buffer."
 	(interactive)
 	(let* ((b-name (car (s-split "[.]" (buffer-name))))
-		   (in-links-buffer
-			(get-buffer-create (s-lex-format "in-links<${b-name}>")))
+		   (backlinks-buffer
+			(get-buffer-create (s-lex-format "backlinks<${b-name}>")))
 		   (grep-buffer
-			(get-buffer-create (s-lex-format "*grep:in-links<${b-name}>*")))
+			(get-buffer-create (s-lex-format "grep:backlinks<${b-name}>")))
 		   (grep-string (with-temp-buffer
 						  (shell-command
 						   (s-lex-format "grep -nwrH -C1 --exclude-dir=.git \"${b-name}\" .") t)
 						  (buffer-string))))
 
-	  (set-buffer grep-buffer)
-	  (erase-buffer)
-	  (insert grep-string)
+	  (with-current-buffer grep-buffer
+		(erase-buffer)
+		(insert grep-string))
 		  
-	  (set-buffer in-links-buffer)
-	  (gn--create-links-buffer-from-grep grep-buffer)
-	  (beginning-of-buffer)
-	  (gn-mode)
-	  (pop-to-buffer in-links-buffer)))
+	  (with-current-buffer backlinks-buffer
+		(graph-notes-backlinks--create-links-buffer-from-grep grep-buffer)
+		(beginning-of-buffer)
+		(graph-notes-backlinks-mode)
+		(visual-line-mode))
+	  
+	  (pop-to-buffer backlinks-buffer)))
 
 (defvar graph-notes-mode-map
   (let ((map (make-sparse-keymap)))
