@@ -1,5 +1,29 @@
-;; -*- lexical-binding: t; -*-
-;;; package --- Summary
+;;; graph-notes-backlinks --- Code related to the backlinks buffer -*- lexical-binding: t; -*-
+
+;; Copyright © 2020 Simon Bugge Siggaard <buggaarde@gmail.com>
+
+;; Author: Simon Bugge Siggaard <buggaarde@gmail.com>
+;; URL: https://github.com/buggaarde/graph-notes
+;; Keywords: non-hierarchical, notes, note, notetaking, productivity, creativity
+;; Version: 0.1
+;; Package-Requires: ((emacs "26.1") (dash "2.13") (f "0.17.2") (s "1.12.0") (emacsql "3.0.0") (emacsql-sqlite "1.0.0"))
+
+;; This file is NOT part of GNU Emacs.
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
 
 ;;; Commentary:
 
